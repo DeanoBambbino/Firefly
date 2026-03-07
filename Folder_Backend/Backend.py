@@ -2,7 +2,7 @@ import requests
 BPM = 150
 def Search_BPM (BPM):
     # Define your variables
-    api_key = "YOUR_API_KEY_HERE"
+    api_key = "b07aebb582279c669b8d2f42834f61ef"
     base_url = "https://api.getsong.co/tempo/"
 
     # Build the URL using an f-string
