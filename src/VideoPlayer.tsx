@@ -5,6 +5,7 @@ export default function VideoPlayer() {
   const [activeLabel, setActiveLabel] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -17,7 +18,6 @@ export default function VideoPlayer() {
     }
 
     setError(null);
-
     const objectUrl = URL.createObjectURL(file);
     setActiveUrl(objectUrl);
     setActiveLabel(file.name);
@@ -39,7 +39,6 @@ export default function VideoPlayer() {
   const onDrop = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setDragging(false);
-
     const file = e.dataTransfer.files[0];
     if (file) loadFromFile(file);
   };
@@ -58,7 +57,6 @@ export default function VideoPlayer() {
     <div style={s.page}>
       <div style={s.bgGlow} />
 
-      {/* HEADER */}
       <header style={s.header}>
         <div style={s.brand}>
           <div style={s.brandIcon}>▶</div>
@@ -74,44 +72,34 @@ export default function VideoPlayer() {
         )}
       </header>
 
-      {/* EMPTY STATE */}
       {!activeUrl && (
         <div
-          style={{ ...s.fullDropZone, ...(dragging ? s.fullDropZoneActive : {}) }}
+          style={s.pageCenter}
           onDragOver={onDragOver}
           onDragLeave={onDragLeave}
           onDrop={onDrop}
-          onClick={() => fileInputRef.current?.click()}
         >
           <div style={s.emptyContainer}>
-            <div style={{ ...s.dropContent, ...(dragging ? { borderColor: "#ff5c2b" } : {}) }}>
+            {/* DROP BOX ONLY */}
+            <div
+              style={{ ...s.dropContent, ...(dragging ? { borderColor: "#ff5c2b" } : {}) }}
+              onClick={() => fileInputRef.current?.click()}
+            >
               <div style={s.dropIcon}>{dragging ? "⬇" : "📁"}</div>
               <div style={s.dropTitle}>{dragging ? "Release to load" : "Drop a video file"}</div>
-              <div style={s.dropSub}>or click anywhere to browse · MP4, WebM, OGG</div>
+              <div style={s.dropSub}>or click to browse · MP4, WebM, OGG</div>
               {error && <div style={s.errorBar}>⚠ {error}</div>}
             </div>
 
-            {/* Metadata frames */}
-            <div style={s.metaGrid}>
-              <div style={s.metaCard}>
-                <div style={s.metaTitle}>Title</div>
-                <div style={s.metaValue}>No video loaded</div>
-              </div>
-
-              <div style={s.metaCard}>
-                <div style={s.metaTitle}>Author</div>
-                <div style={s.metaValue}>Unknown</div>
-              </div>
-
-              <div style={s.metaCard}>
-                <div style={s.metaTitle}>Length</div>
-                <div style={s.metaValue}>--:--</div>
-              </div>
-
-              <div style={s.metaCard}>
-                <div style={s.metaTitle}>Format</div>
-                <div style={s.metaValue}>MP4 / WebM / OGG</div>
-              </div>
+            {/* METADATA GRID */}
+            <div style={s.metaTable}>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} style={s.metaRow}>
+                  <div style={s.metaCell}>Song:</div>
+                  <div style={s.metaCell}>Artist:</div>
+                  <div style={s.metaCell}>BPM:</div>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -125,7 +113,6 @@ export default function VideoPlayer() {
         </div>
       )}
 
-      {/* PLAYER STATE */}
       {activeUrl && (
         <div style={s.playerPage}>
           {error && <div style={s.errorBar}>⚠ {error}</div>}
@@ -136,10 +123,8 @@ export default function VideoPlayer() {
                 style={{ ...s.dot, background: "#ff5f57", border: "none", cursor: "pointer" }}
                 onClick={closeVideo}
               />
-
               <span style={{ ...s.dot, background: "#febc2e" }} />
               <span style={{ ...s.dot, background: "#28c840" }} />
-
               <span style={s.playerLabel}>{activeLabel}</span>
             </div>
 
@@ -207,43 +192,31 @@ const s: Record<string, React.CSSProperties> = {
     fontSize: "18px",
   },
 
-  brandName: {
-    fontSize: "1.1rem",
-    fontWeight: 700,
-    letterSpacing: "-0.02em",
-  },
+  brandName: { fontSize: "1.1rem", fontWeight: 700 },
 
   newBtn: {
     background: "transparent",
     border: "1px solid #1e2530",
     borderRadius: "10px",
     color: "#636b7a",
-    fontFamily: "inherit",
     fontSize: "0.82rem",
     fontWeight: 600,
     padding: "8px 16px",
     cursor: "pointer",
   },
 
-  fullDropZone: {
-    position: "fixed",
-    inset: 0,
+  pageCenter: {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    cursor: "pointer",
-    zIndex: 1,
-  },
-
-  fullDropZoneActive: {
-    background: "rgba(255,92,43,0.05)",
+    height: "100vh",
   },
 
   emptyContainer: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    gap: "30px",
+    gap: "28px",
   },
 
   dropContent: {
@@ -255,79 +228,64 @@ const s: Record<string, React.CSSProperties> = {
     padding: "60px 80px",
     border: "4px dashed #4a5260",
     borderRadius: "20px",
-    transition: "border-color 0.2s",
+    cursor: "pointer",
   },
 
   dropIcon: { fontSize: "3.5rem", opacity: 0.6 },
 
-  dropTitle: {
-    fontWeight: 700,
-    fontSize: "1.4rem",
-    letterSpacing: "-0.02em",
+  dropTitle: { fontWeight: 700, fontSize: "1.4rem" },
+
+  dropSub: { fontSize: "0.82rem", color: "#636b7a" },
+
+  metaTable: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px",
+    width: "520px",
+    maxWidth: "90%",
   },
 
-  dropSub: {
-    fontSize: "0.82rem",
+  metaRow: {
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr 1fr",
+    gap: "10px",
+  },
+
+  metaCell: {
+    background: "#0f1318",
+    border: "1px solid #1e2530",
+    borderRadius: "10px",
+    padding: "12px",
+    textAlign: "center",
+    fontFamily: "monospace",
+    fontSize: "0.85rem",
     color: "#636b7a",
+    pointerEvents: "none",
   },
 
   errorBar: {
-    width: "100%",
     background: "rgba(255,92,43,0.1)",
     border: "1px solid rgba(255,92,43,0.3)",
     borderRadius: "10px",
-    padding: "12px 16px",
+    padding: "10px",
     fontSize: "0.82rem",
     color: "#ff5c2b",
   },
 
-  metaGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
-    gap: "16px",
-    width: "600px",
-    maxWidth: "90%",
-  },
-
-  metaCard: {
-    background: "#0f1318",
-    border: "1px solid #1e2530",
-    borderRadius: "12px",
-    padding: "14px 18px",
-    textAlign: "center",
-  },
-
-  metaTitle: {
-    fontSize: "0.7rem",
-    color: "#636b7a",
-    marginBottom: "6px",
-    fontFamily: "monospace",
-  },
-
-  metaValue: {
-    fontSize: "0.9rem",
-    fontWeight: 600,
-  },
-
   playerPage: {
-    position: "relative",
-    zIndex: 1,
     maxWidth: "880px",
     margin: "0 auto",
     padding: "120px 20px 40px",
     display: "flex",
     flexDirection: "column",
     gap: "24px",
-    minHeight: "100vh",
   },
 
   playerShell: {
-    width: "100%",
     background: "#0f1318",
     border: "1px solid #1e2530",
     borderRadius: "20px",
     overflow: "hidden",
-    boxShadow: "0 24px 80px rgba(0,0,0,0.5)",
   },
 
   topBar: {
@@ -342,7 +300,6 @@ const s: Record<string, React.CSSProperties> = {
     width: "10px",
     height: "10px",
     borderRadius: "50%",
-    display: "inline-block",
   },
 
   playerLabel: {
@@ -350,24 +307,20 @@ const s: Record<string, React.CSSProperties> = {
     fontFamily: "monospace",
     fontSize: "0.72rem",
     color: "#636b7a",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    whiteSpace: "nowrap",
     flex: 1,
   },
 
   video: {
     width: "100%",
     maxHeight: "540px",
-    display: "block",
   },
 
   footer: {
     fontFamily: "monospace",
-    fontSize: "0.68rem",
+    fontSize: "0.7rem",
     color: "#636b7a",
-    opacity: 0.5,
     textAlign: "center",
-    marginTop: "auto",
+    opacity: 0.5,
   },
 };
+
