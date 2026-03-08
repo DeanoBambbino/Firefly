@@ -5,10 +5,11 @@ try:
 except ImportError:
     subprocess.check_call([sys.executable, "-m", "pip", "install", "requests"])
     import requests
-BPM = 150
+BPM = 100
 
 
 def Search_BPM (BPM):
+    song_count = 0
     # Define your variables
     api_key = "b07aebb582279c669b8d2f42834f61ef"
     base_url = "https://api.getsong.co/tempo/"
@@ -30,14 +31,22 @@ def Search_BPM (BPM):
             
         for song in BPM_song_list:
             if isinstance(song, dict):
-                title = song.get('song_title', 'Unknown') # Changed from 'song_name'
-                artist = song.get('artist_name', 'Unknown')
-                tempo = song.get('bpm', BPM)              # Changed from 'tempo'
-        
-                print(f"Song: {title} | Artist: {artist} | BPM: {tempo}")
+                title = song.get('song_title', 'Unknown')
+                
+                # Pull the artist dictionary
+                artist_data = song.get('artist', {})
+                # Use 'name' to get the actual string
+                artist = artist_data.get('name', 'Unknown Artist')
+                album_data = song.get('album', {})
+                album = album_data.get('title', 'Unknown Album')
+                tempo = song.get('bpm', BPM) 
+                song_count += 1
+            #TEST
+                print(f"Song: {title} | Artist: {artist} | BPM: {tempo}|Album: {album}")
             else:
                 # If it's still a string, just print the string to see what it is
                 print(f"Found something that isn't a song: {song}")
+        print("|Number of song's:",(song_count))
         return BPM_song_list
     else:
         print(f"Error: Received status code {response.status_code}")
