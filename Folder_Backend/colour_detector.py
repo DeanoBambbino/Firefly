@@ -25,9 +25,9 @@ class ColorDetector:
     }
 
     # Minimum number of green pixels to count as a "flash detected"
-    FLASH_PIXEL_THRESHOLD = 50
+    FLASH_PIXEL_THRESHOLD = 40
 
-    def __init__(self, video_source=0):
+    def __init__(self, video_source):
         self.frame = None
         
         if isinstance(video_source, str):
@@ -44,6 +44,7 @@ class ColorDetector:
         self.flash_intervals = []       # Time between consecutive flash starts
         self.last_flash_start = None    # Start time of the previous flash (for interval calc)
         self.current_bpm = 0.0
+        self.run()
 
     def create_color_mask(self, color):
         try:
@@ -123,7 +124,7 @@ class ColorDetector:
         try:
             print("Welcome!\nPlease enter the color you would like to set for detecting...\n")
             print(f'Color Choices: {list(self.COLOR_RANGES.keys())}')
-            color = input("Specify Color Mask: ")
+            color = 'firefly'
             print(f'Applying {color} color mask to video feed.')
             if color == 'firefly':
                 print(f'Firefly BPM tracking active (threshold: {self.FLASH_PIXEL_THRESHOLD} pixels).')
@@ -171,7 +172,7 @@ class ColorDetector:
 
             self.cap.release()
             cv2.destroyAllWindows()
-
+            
         except Exception as e:
             print(f"Error running Color Detector application: {e}")
 
