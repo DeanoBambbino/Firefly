@@ -15,20 +15,31 @@ export default function VideoPlayer() {
       setError(`Unsupported format: ${file.type || "unknown"}. Use MP4, WebM, or OGG.`);
       return;
     }
+
     setError(null);
+
     const objectUrl = URL.createObjectURL(file);
     setActiveUrl(objectUrl);
     setActiveLabel(file.name);
+  };
+
+  const closeVideo = () => {
+    setActiveUrl("");
+    setActiveLabel("");
+    setError(null);
   };
 
   const onDragOver = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setDragging(true);
   };
+
   const onDragLeave = () => setDragging(false);
+
   const onDrop = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setDragging(false);
+
     const file = e.dataTransfer.files[0];
     if (file) loadFromFile(file);
   };
@@ -40,15 +51,14 @@ export default function VideoPlayer() {
 
   const handleError = () => {
     setError("Could not load video. Try a different file.");
-    setActiveUrl("");
-    setActiveLabel("");
+    closeVideo();
   };
 
   return (
     <div style={s.page}>
       <div style={s.bgGlow} />
 
-      {/* Fixed header — always visible */}
+      {/* HEADER */}
       <header style={s.header}>
         <div style={s.brand}>
           <div style={s.brandIcon}>▶</div>
@@ -56,15 +66,9 @@ export default function VideoPlayer() {
             Beat<span style={{ color: "#ff5c2b" }}>Fly</span>
           </div>
         </div>
+
         {activeUrl && (
-          <button
-            style={s.newBtn}
-            onClick={() => {
-              setActiveUrl("");
-              setActiveLabel("");
-              setError(null);
-            }}
-          >
+          <button style={s.newBtn} onClick={closeVideo}>
             + New Video
           </button>
         )}
@@ -79,12 +83,38 @@ export default function VideoPlayer() {
           onDrop={onDrop}
           onClick={() => fileInputRef.current?.click()}
         >
-          <div style={{ ...s.dropContent, ...(dragging ? { borderColor: "#ff5c2b" } : {}) }}>
-            <div style={s.dropIcon}>{dragging ? "⬇" : "📁"}</div>
-            <div style={s.dropTitle}>{dragging ? "Release to load" : "Drop a video file"}</div>
-            <div style={s.dropSub}>or click anywhere to browse · MP4, WebM, OGG</div>
-            {error && <div style={s.errorBar}>⚠ {error}</div>}
+          <div style={s.emptyContainer}>
+            <div style={{ ...s.dropContent, ...(dragging ? { borderColor: "#ff5c2b" } : {}) }}>
+              <div style={s.dropIcon}>{dragging ? "⬇" : "📁"}</div>
+              <div style={s.dropTitle}>{dragging ? "Release to load" : "Drop a video file"}</div>
+              <div style={s.dropSub}>or click anywhere to browse · MP4, WebM, OGG</div>
+              {error && <div style={s.errorBar}>⚠ {error}</div>}
+            </div>
+
+            {/* Metadata frames */}
+            <div style={s.metaGrid}>
+              <div style={s.metaCard}>
+                <div style={s.metaTitle}>Title</div>
+                <div style={s.metaValue}>No video loaded</div>
+              </div>
+
+              <div style={s.metaCard}>
+                <div style={s.metaTitle}>Author</div>
+                <div style={s.metaValue}>Unknown</div>
+              </div>
+
+              <div style={s.metaCard}>
+                <div style={s.metaTitle}>Length</div>
+                <div style={s.metaValue}>--:--</div>
+              </div>
+
+              <div style={s.metaCard}>
+                <div style={s.metaTitle}>Format</div>
+                <div style={s.metaValue}>MP4 / WebM / OGG</div>
+              </div>
+            </div>
           </div>
+
           <input
             ref={fileInputRef}
             type="file"
@@ -102,11 +132,17 @@ export default function VideoPlayer() {
 
           <div style={s.playerShell}>
             <div style={s.topBar}>
-              <span style={{ ...s.dot, background: "#ff5f57" }} />
+              <button
+                style={{ ...s.dot, background: "#ff5f57", border: "none", cursor: "pointer" }}
+                onClick={closeVideo}
+              />
+
               <span style={{ ...s.dot, background: "#febc2e" }} />
               <span style={{ ...s.dot, background: "#28c840" }} />
+
               <span style={s.playerLabel}>{activeLabel}</span>
             </div>
+
             <video
               ref={videoRef}
               key={activeUrl}
@@ -134,6 +170,7 @@ const s: Record<string, React.CSSProperties> = {
     fontFamily: "'Syne', sans-serif",
     overflow: "auto",
   },
+
   bgGlow: {
     position: "fixed",
     inset: 0,
@@ -142,6 +179,7 @@ const s: Record<string, React.CSSProperties> = {
     pointerEvents: "none",
     zIndex: 0,
   },
+
   header: {
     position: "fixed",
     top: 0,
@@ -155,7 +193,9 @@ const s: Record<string, React.CSSProperties> = {
     background: "#080a0e",
     zIndex: 10,
   },
+
   brand: { display: "flex", alignItems: "center", gap: "10px" },
+
   brandIcon: {
     width: "36px",
     height: "36px",
@@ -166,7 +206,13 @@ const s: Record<string, React.CSSProperties> = {
     justifyContent: "center",
     fontSize: "18px",
   },
-  brandName: { fontSize: "1.1rem", fontWeight: 700, letterSpacing: "-0.02em" },
+
+  brandName: {
+    fontSize: "1.1rem",
+    fontWeight: 700,
+    letterSpacing: "-0.02em",
+  },
+
   newBtn: {
     background: "transparent",
     border: "1px solid #1e2530",
@@ -178,6 +224,7 @@ const s: Record<string, React.CSSProperties> = {
     padding: "8px 16px",
     cursor: "pointer",
   },
+
   fullDropZone: {
     position: "fixed",
     inset: 0,
@@ -186,26 +233,44 @@ const s: Record<string, React.CSSProperties> = {
     justifyContent: "center",
     cursor: "pointer",
     zIndex: 1,
-    transition: "background 0.2s",
   },
+
   fullDropZoneActive: {
     background: "rgba(255,92,43,0.05)",
   },
+
+  emptyContainer: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: "30px",
+  },
+
   dropContent: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     gap: "12px",
-    pointerEvents: "none",
     textAlign: "center",
     padding: "60px 80px",
     border: "4px dashed #4a5260",
     borderRadius: "20px",
     transition: "border-color 0.2s",
   },
+
   dropIcon: { fontSize: "3.5rem", opacity: 0.6 },
-  dropTitle: { fontWeight: 700, fontSize: "1.4rem", letterSpacing: "-0.02em" },
-  dropSub: { fontSize: "0.82rem", color: "#636b7a" },
+
+  dropTitle: {
+    fontWeight: 700,
+    fontSize: "1.4rem",
+    letterSpacing: "-0.02em",
+  },
+
+  dropSub: {
+    fontSize: "0.82rem",
+    color: "#636b7a",
+  },
+
   errorBar: {
     width: "100%",
     background: "rgba(255,92,43,0.1)",
@@ -214,8 +279,36 @@ const s: Record<string, React.CSSProperties> = {
     padding: "12px 16px",
     fontSize: "0.82rem",
     color: "#ff5c2b",
-    pointerEvents: "auto",
   },
+
+  metaGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+    gap: "16px",
+    width: "600px",
+    maxWidth: "90%",
+  },
+
+  metaCard: {
+    background: "#0f1318",
+    border: "1px solid #1e2530",
+    borderRadius: "12px",
+    padding: "14px 18px",
+    textAlign: "center",
+  },
+
+  metaTitle: {
+    fontSize: "0.7rem",
+    color: "#636b7a",
+    marginBottom: "6px",
+    fontFamily: "monospace",
+  },
+
+  metaValue: {
+    fontSize: "0.9rem",
+    fontWeight: 600,
+  },
+
   playerPage: {
     position: "relative",
     zIndex: 1,
@@ -227,6 +320,7 @@ const s: Record<string, React.CSSProperties> = {
     gap: "24px",
     minHeight: "100vh",
   },
+
   playerShell: {
     width: "100%",
     background: "#0f1318",
@@ -235,6 +329,7 @@ const s: Record<string, React.CSSProperties> = {
     overflow: "hidden",
     boxShadow: "0 24px 80px rgba(0,0,0,0.5)",
   },
+
   topBar: {
     display: "flex",
     alignItems: "center",
@@ -242,12 +337,14 @@ const s: Record<string, React.CSSProperties> = {
     padding: "14px 18px",
     borderBottom: "1px solid #1e2530",
   },
+
   dot: {
     width: "10px",
     height: "10px",
     borderRadius: "50%",
     display: "inline-block",
   },
+
   playerLabel: {
     marginLeft: "8px",
     fontFamily: "monospace",
@@ -258,11 +355,13 @@ const s: Record<string, React.CSSProperties> = {
     whiteSpace: "nowrap",
     flex: 1,
   },
+
   video: {
     width: "100%",
     maxHeight: "540px",
     display: "block",
   },
+
   footer: {
     fontFamily: "monospace",
     fontSize: "0.68rem",
