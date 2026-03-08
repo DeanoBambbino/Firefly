@@ -14,7 +14,7 @@ import time
 
 class ColorDetector:
     COLOR_RANGES = {
-        'red':      ([0, 50, 30],    [35, 255, 255]),
+        'red':      ([150, 80, 60],    [200, 255, 255]),
         'green':    ([50, 40, 50],   [90, 255, 255]),
         'blue':     ([90, 50, 50],   [120, 255, 255]),
         'yellow':   ([20, 100, 100], [30, 255, 255]),
@@ -29,7 +29,13 @@ class ColorDetector:
 
     def __init__(self, video_source=0):
         self.frame = None
-        self.cap = cv2.VideoCapture(video_source)
+        
+        if isinstance(video_source, str):
+            self.cap = cv2.VideoCapture(video_source)
+            if not self.cap.isOpened():
+                raise FileNotFoundError(f"Could not open video file: {video_source}")
+        else:
+            self.cap = cv2.VideoCapture(video_source)
         self.time_list = []
 
         # Firefly tracking state
@@ -171,5 +177,10 @@ class ColorDetector:
 
 
 if __name__ == "__main__":
-    color_detector = ColorDetector()
+    vid_sor = input("Input a link to a video or None:")
+
+    if vid_sor == "":
+        color_detector = ColorDetector()
+    else:
+        color_detector = ColorDetector(vid_sor)
     color_detector.run()
