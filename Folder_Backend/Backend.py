@@ -7,7 +7,6 @@ except ImportError:
     import requests
 BPM = 100
 
-
 def Search_BPM (BPM):
     song_count = 0
     # Define your variables
@@ -41,8 +40,11 @@ def Search_BPM (BPM):
                 album = album_data.get('title', 'Unknown Album')
                 tempo = song.get('bpm', BPM) 
                 song_count += 1
+                
             #TEST
-                print(f"Song: {title} | Artist: {artist} | BPM: {tempo}|Album: {album}")
+                #print(f"Song: {title} | Artist: {artist} | BPM: {tempo}|Album: {album}")
+                for thing in playlist:
+                    print(thing)
             else:
                 # If it's still a string, just print the string to see what it is
                 print(f"Found something that isn't a song: {song}")
