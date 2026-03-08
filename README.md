@@ -1,5 +1,6 @@
 # Firefly# 
 Project Firefly
+Powered by Cloudinary and getsongbpm.com
 Brought to you by Tyler, Tuan, Dean, Ryan
 
 **Analyzing firefly light patterns and matching them to music with similar BPM**
@@ -163,7 +164,7 @@ Matching Songs:
 * **OpenCV**
 * **NumPy**
 * **Requests**
-* **Song Tempo API**
+* **Song Tempo API (getsongbpm.com)**
 
 ---
 
