@@ -5,8 +5,6 @@ export default function VideoPlayer() {
   const [activeLabel, setActiveLabel] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
-  const [uploading, setUploading] = useState(false);
-
   const videoRef = useRef<HTMLVideoElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -44,6 +42,12 @@ export default function VideoPlayer() {
     } finally {
       setUploading(false);
     }
+  };
+
+  const closeVideo = () => {
+    setActiveUrl("");
+    setActiveLabel("");
+    setError(null);
   };
 
   const closeVideo = () => {
@@ -101,35 +105,21 @@ export default function VideoPlayer() {
           onDragOver={onDragOver}
           onDragLeave={onDragLeave}
           onDrop={onDrop}
+          onClick={() => fileInputRef.current?.click()}
         >
-          <div style={s.emptyContainer}>
-            {/* DROP BOX */}
-            <div
-              style={{
-                ...s.dropContent,
-                ...(dragging ? { borderColor: "#ff5c2b" } : {}),
-                ...(uploading ? { opacity: 0.6, pointerEvents: "none" } : {}),
-              }}
-              onClick={() => !uploading && fileInputRef.current?.click()}
-            >
-              <div style={s.dropIcon}>
-                {uploading ? "⏳" : dragging ? "⬇" : "📁"}
-              </div>
-              <div style={s.dropTitle}>
-                {uploading ? "Uploading…" : dragging ? "Release to load" : "Drop a video file"}
-              </div>
-              <div style={s.dropSub}>or click to browse · MP4, WebM, OGG</div>
-              {error && <div style={s.errorBar}>⚠ {error}</div>}
-            </div>
-
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="video/mp4,video/webm,video/ogg,video/quicktime"
-              style={{ display: "none" }}
-              onChange={onFileChange}
-            />
+          <div style={{ ...s.dropContent, ...(dragging ? { borderColor: "#ff5c2b" } : {}) }}>
+            <div style={s.dropIcon}>{dragging ? "⬇" : "📁"}</div>
+            <div style={s.dropTitle}>{dragging ? "Release to load" : "Drop a video file"}</div>
+            <div style={s.dropSub}>or click anywhere to browse · MP4, WebM, OGG</div>
+            {error && <div style={s.errorBar}>⚠ {error}</div>}
           </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="video/mp4,video/webm,video/ogg,video/quicktime"
+            style={{ display: "none" }}
+            onChange={onFileChange}
+          />
         </div>
       )}
 
@@ -269,25 +259,7 @@ const s: Record<string, React.CSSProperties> = {
   dropTitle: { fontWeight: 700, fontSize: "1.4rem" },
 
   dropSub: { fontSize: "0.82rem", color: "#636b7a" },
-
-  metaContainer: {
-    marginTop: "20px",
-    maxHeight: "200px",
-    overflowY: "auto",
-    width: "520px",
-    maxWidth: "90%",
-    border: "1px solid #1e2530",
-    borderRadius: "10px",
-    padding: "12px",
-    background: "#0f1318",
-    marginLeft: "auto",
-    marginRight: "auto",
-  },
-
-  metaTable: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "10px",
+  errorBar: {
     width: "100%",
   },
 
