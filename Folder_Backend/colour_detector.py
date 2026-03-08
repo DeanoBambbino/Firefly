@@ -10,6 +10,7 @@ https://docs.opencv.org/3.4/df/d9d/tutorial_py_colorspaces.html
 """
 import cv2
 import numpy as np
+import time
 
 class ColorDetector:
     """
@@ -28,11 +29,14 @@ class ColorDetector:
 
     # Define HSV color ranges for different colors (obtained by getting hsv values for specific objects).
     COLOR_RANGES = {
-        'red': ([160, 40, 200], [180, 120, 255]),
+        'red': ([0, 50, 30], [35, 255, 255]),
         'green': ([50, 40, 50], [90, 255, 255]),
         'blue': ([90, 50, 50], [120, 255, 255]),
         'yellow': ([20, 100, 100], [30, 255, 255]),
         'purple': ([125, 50, 50], [140, 255, 255]),
+        'white': ([0,0,240], [20,20,255]),
+        "strict":([0,0, 254],[255, 255, 255]),
+        "firefly":([45,50,50],[95,255,255])
         # Add more colors as needed
     }
 
@@ -46,6 +50,7 @@ class ColorDetector:
         # Open a connection to the webcam and initialize the current frame to None
         self.frame = None
         self.cap = cv2.VideoCapture(video_source)
+        self.time_list = []
 
     def create_color_mask(self, color):
         """
