@@ -12,8 +12,3 @@ class playlist:
         # your code here
         string = (f"Song Name:{self.name} \n Artist:{self.artist}\n BPM: {self.BPM}\n Album{self.album}")
         return string
-    
-    def sort(self):
-        
-    def insert(self):
-        
