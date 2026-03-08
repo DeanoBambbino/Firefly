@@ -80,7 +80,7 @@ export default function VideoPlayer() {
           onDrop={onDrop}
         >
           <div style={s.emptyContainer}>
-            {/* DROP BOX ONLY */}
+            {/* DROP BOX */}
             <div
               style={{ ...s.dropContent, ...(dragging ? { borderColor: "#ff5c2b" } : {}) }}
               onClick={() => fileInputRef.current?.click()}
@@ -91,25 +91,14 @@ export default function VideoPlayer() {
               {error && <div style={s.errorBar}>⚠ {error}</div>}
             </div>
 
-            {/* METADATA GRID */}
-            <div style={s.metaTable}>
-              {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} style={s.metaRow}>
-                  <div style={s.metaCell}>Song:</div>
-                  <div style={s.metaCell}>Artist:</div>
-                  <div style={s.metaCell}>BPM:</div>
-                </div>
-              ))}
-            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="video/mp4,video/webm,video/ogg,video/quicktime"
+              style={{ display: "none" }}
+              onChange={onFileChange}
+            />
           </div>
-
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="video/mp4,video/webm,video/ogg,video/quicktime"
-            style={{ display: "none" }}
-            onChange={onFileChange}
-          />
         </div>
       )}
 
@@ -139,7 +128,20 @@ export default function VideoPlayer() {
             />
           </div>
 
-          <footer style={s.footer}>HTML5 Video Player</footer>
+          {/* METADATA GRID - appears after video is added */}
+          <div style={s.metaContainer}>
+            <div style={s.metaTable}>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} style={s.metaRow}>
+                  <div style={s.metaCell}>Song:</div>
+                  <div style={s.metaCell}>Artist:</div>
+                  <div style={s.metaCell}>BPM:</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <footer style={s.footer}>Powered By getsongbpm.com</footer>
         </div>
       )}
     </div>
@@ -237,12 +239,25 @@ const s: Record<string, React.CSSProperties> = {
 
   dropSub: { fontSize: "0.82rem", color: "#636b7a" },
 
+  metaContainer: {
+    marginTop: "20px",
+    maxHeight: "200px",
+    overflowY: "auto",
+    width: "520px",
+    maxWidth: "90%",
+    border: "1px solid #1e2530",
+    borderRadius: "10px",
+    padding: "12px",
+    background: "#0f1318",
+    marginLeft: "auto",   // center horizontally
+    marginRight: "auto",  // center horizontally
+  },
+
   metaTable: {
     display: "flex",
     flexDirection: "column",
     gap: "10px",
-    width: "520px",
-    maxWidth: "90%",
+    width: "100%",
   },
 
   metaRow: {
@@ -323,4 +338,3 @@ const s: Record<string, React.CSSProperties> = {
     opacity: 0.5,
   },
 };
-
