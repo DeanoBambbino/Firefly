@@ -21,7 +21,7 @@ class ColorDetector:
         'purple':   ([125, 50, 50],  [140, 255, 255]),
         'white':    ([0, 0, 240],    [20, 20, 255]),
         'strict':   ([0, 0, 254],    [255, 255, 255]),
-        'firefly':  ([45, 50, 50],   [95, 255, 255])
+        'firefly':  ([40, 60, 120], [75, 255, 255])
     }
 
     # Minimum number of green pixels to count as a "flash detected"

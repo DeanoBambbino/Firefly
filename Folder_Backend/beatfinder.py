@@ -56,7 +56,7 @@ def Search_BPM (BPM):
         print(f"Error: Received status code {response.status_code}")
         return []
     
-c = ColorDetector("https://cdn.discordapp.com/attachments/239526221543768064/1417967638415671429/crisp.mp4?ex=69add945&is=69ac87c5&hm=7a3bfd8a16adb6561d46939c879212eb6aad533f2e299110b53e11ad4230219b&")
+c = ColorDetector(input("Give video URL you fuck: "))
 bpm = math.ceil(c.current_bpm)
 too_fast = False 
 too_slow = False 
@@ -72,8 +72,8 @@ elif bpm <40:
 if too_slow == False and too_fast == False:
     Search_BPM(bpm)
 elif too_fast == True:
-    print("too many bpm")
+    print("too many bpm", bpm)
 else:
-    print("Too slow bpm")
+    print("Too slow bpm", bpm)
 
     
