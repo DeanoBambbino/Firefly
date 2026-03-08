@@ -5,6 +5,8 @@ export default function VideoPlayer() {
   const [activeLabel, setActiveLabel] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -22,15 +24,16 @@ export default function VideoPlayer() {
     try {
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("upload_preset", "cod the fish"); // 🔴 replace with your Cloudinary upload preset
+      formData.append("upload_preset", "cod the fish");
 
-      const res = await fetch("https://api.cloudinary.com/v1_1/dtpxju1dm/video/upload", { // 🔴 replace your_cloud with your Cloudinary cloud name
+      const res = await fetch("https://api.cloudinary.com/v1_1/dtpxju1dm/video/upload", { // 🔴 replace YOUR_CLOUD_NAME
         method: "POST",
         body: formData,
       });
 
       const data = await res.json();
       console.log(data);
+
       if (!res.ok) {
         throw new Error(data.error?.message || "Upload failed");
       }
@@ -42,12 +45,6 @@ export default function VideoPlayer() {
     } finally {
       setUploading(false);
     }
-  };
-
-  const closeVideo = () => {
-    setActiveUrl("");
-    setActiveLabel("");
-    setError(null);
   };
 
   const closeVideo = () => {
@@ -105,11 +102,19 @@ export default function VideoPlayer() {
           onDragOver={onDragOver}
           onDragLeave={onDragLeave}
           onDrop={onDrop}
-          onClick={() => fileInputRef.current?.click()}
+          onClick={() => !uploading && fileInputRef.current?.click()}
         >
-          <div style={{ ...s.dropContent, ...(dragging ? { borderColor: "#ff5c2b" } : {}) }}>
-            <div style={s.dropIcon}>{dragging ? "⬇" : "📁"}</div>
-            <div style={s.dropTitle}>{dragging ? "Release to load" : "Drop a video file"}</div>
+          <div
+            style={{
+              ...s.dropContent,
+              ...(dragging ? { borderColor: "#ff5c2b" } : {}),
+              ...(uploading ? { opacity: 0.6, pointerEvents: "none" } : {}),
+            }}
+          >
+            <div style={s.dropIcon}>{uploading ? "⏳" : dragging ? "⬇" : "📁"}</div>
+            <div style={s.dropTitle}>
+              {uploading ? "Uploading…" : dragging ? "Release to load" : "Drop a video file"}
+            </div>
             <div style={s.dropSub}>or click anywhere to browse · MP4, WebM, OGG</div>
             {error && <div style={s.errorBar}>⚠ {error}</div>}
           </div>
@@ -235,13 +240,6 @@ const s: Record<string, React.CSSProperties> = {
     height: "100vh",
   },
 
-  emptyContainer: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    gap: "28px",
-  },
-
   dropContent: {
     display: "flex",
     flexDirection: "column",
@@ -259,7 +257,34 @@ const s: Record<string, React.CSSProperties> = {
   dropTitle: { fontWeight: 700, fontSize: "1.4rem" },
 
   dropSub: { fontSize: "0.82rem", color: "#636b7a" },
+
   errorBar: {
+    background: "rgba(255,92,43,0.1)",
+    border: "1px solid rgba(255,92,43,0.3)",
+    borderRadius: "10px",
+    padding: "10px",
+    fontSize: "0.82rem",
+    color: "#ff5c2b",
+  },
+
+  metaContainer: {
+    marginTop: "20px",
+    maxHeight: "200px",
+    overflowY: "auto",
+    width: "520px",
+    maxWidth: "90%",
+    border: "1px solid #1e2530",
+    borderRadius: "10px",
+    padding: "12px",
+    background: "#0f1318",
+    marginLeft: "auto",
+    marginRight: "auto",
+  },
+
+  metaTable: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px",
     width: "100%",
   },
 
@@ -279,15 +304,6 @@ const s: Record<string, React.CSSProperties> = {
     fontSize: "0.85rem",
     color: "#636b7a",
     pointerEvents: "none",
-  },
-
-  errorBar: {
-    background: "rgba(255,92,43,0.1)",
-    border: "1px solid rgba(255,92,43,0.3)",
-    borderRadius: "10px",
-    padding: "10px",
-    fontSize: "0.82rem",
-    color: "#ff5c2b",
   },
 
   playerPage: {
