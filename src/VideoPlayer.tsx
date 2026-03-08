@@ -6,6 +6,7 @@ export default function VideoPlayer() {
   const [error, setError] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [songData, setSongData] = useState<any>(null);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -26,13 +27,12 @@ export default function VideoPlayer() {
       formData.append("file", file);
       formData.append("upload_preset", "cod the fish");
 
-      const res = await fetch("https://api.cloudinary.com/v1_1/dtpxju1dm/video/upload", { // 🔴 replace YOUR_CLOUD_NAME
+      const res = await fetch("https://api.cloudinary.com/v1_1/dtpxju1dm/video/upload", {
         method: "POST",
         body: formData,
       });
 
       const data = await res.json();
-      console.log(data);
 
       if (!res.ok) {
         throw new Error(data.error?.message || "Upload failed");
@@ -40,6 +40,13 @@ export default function VideoPlayer() {
 
       setActiveUrl(data.secure_url);
       setActiveLabel(file.name);
+
+      // send URL to backend for BPM analysis
+      const analysis = await fetch(`http://localhost:8000/api/analyze?cloudinary_url=${encodeURIComponent(data.secure_url)}`);
+      const result = await analysis.json();
+      console.log(result);
+      setSongData(result);
+
     } catch (err) {
       setError("Upload failed. Check your Cloudinary config and try again.");
     } finally {
@@ -51,6 +58,7 @@ export default function VideoPlayer() {
     setActiveUrl("");
     setActiveLabel("");
     setError(null);
+    setSongData(null);
   };
 
   const onDragOver = (e: DragEvent<HTMLDivElement>) => {
@@ -154,16 +162,22 @@ export default function VideoPlayer() {
             />
           </div>
 
-          {/* METADATA GRID - appears after video is added */}
+          {/* METADATA GRID */}
           <div style={s.metaContainer}>
             <div style={s.metaTable}>
-              {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} style={s.metaRow}>
-                  <div style={s.metaCell}>Song:</div>
-                  <div style={s.metaCell}>Artist:</div>
-                  <div style={s.metaCell}>BPM:</div>
+              {songData?.songs?.length > 0 ? (
+                songData.songs.map((song: any, i: number) => (
+                  <div key={i} style={s.metaRow}>
+                    <div style={s.metaCell}>Song: {song.song_title}</div>
+                    <div style={s.metaCell}>Artist: {song.artist?.name}</div>
+                    <div style={s.metaCell}>BPM: {songData.bpm}</div>
+                  </div>
+                ))
+              ) : (
+                <div style={s.metaRow}>
+                  <div style={s.metaCell}>{songData ? "No songs found" : "Analyzing…"}</div>
                 </div>
-              ))}
+              )}
             </div>
           </div>
 

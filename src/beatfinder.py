@@ -45,7 +45,7 @@ def Search_BPM (BPM):
                 song_count += 1
                 
             #TEST
-                #print(f"Song: {title} | Artist: {artist} | BPM: {tempo}|Album: {album}")
+                print(f"Song: {title} | Artist: {artist} | BPM: {tempo}|Album: {album}")
 
             else:
                 # If it's still a string, just print the string to see what it is
@@ -55,25 +55,12 @@ def Search_BPM (BPM):
     else:
         print(f"Error: Received status code {response.status_code}")
         return []
-    
-c = ColorDetector("https://cdn.discordapp.com/attachments/239526221543768064/1417967638415671429/crisp.mp4?ex=69add945&is=69ac87c5&hm=7a3bfd8a16adb6561d46939c879212eb6aad533f2e299110b53e11ad4230219b&")
-bpm = math.ceil(c.current_bpm)
-too_fast = False 
-too_slow = False 
-if 30 <= bpm <40:
-    bpm = 40
-elif 220 < bpm <= 230:
-    bpm = 220 
-elif bpm > 220:
-    too_fast = True
-elif bpm <40:
-    too_slow = True
 
-if too_slow == False and too_fast == False:
-    Search_BPM(bpm)
-elif too_fast == True:
-    print("too many bpm")
-else:
-    print("Too slow bpm")
+
+def detect(link):
+    print('read!!')
+    c = ColorDetector(link)
+    bpm = math.ceil(c.current_bpm)
+    return bpm
 
     

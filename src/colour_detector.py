@@ -25,7 +25,7 @@ class ColorDetector:
     }
 
     # Minimum number of green pixels to count as a "flash detected"
-    FLASH_PIXEL_THRESHOLD = 40
+    FLASH_PIXEL_THRESHOLD = 80
 
     def __init__(self, video_source):
         self.frame = None
@@ -179,6 +179,16 @@ class ColorDetector:
             print(f"Error running Color Detector application: {e}")
 
 
+def detect():
+    vid_sor = input("Input a link to a video or None:")
+
+    if vid_sor == "":
+        print('fuck you')
+    else:
+        color_detector = ColorDetector(vid_sor)
+    color_detector.run()
+
+"""
 if __name__ == "__main__":
     vid_sor = input("Input a link to a video or None:")
 
@@ -187,3 +197,4 @@ if __name__ == "__main__":
     else:
         color_detector = ColorDetector(vid_sor)
     color_detector.run()
+"""
