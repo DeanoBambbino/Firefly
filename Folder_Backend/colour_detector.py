@@ -10,7 +10,7 @@ flashes are detected and calculates an average BPM from the flash intervals.
 import cv2
 import numpy as np
 import time
-
+from Cloudinary_edits import make_mp4
 
 class ColorDetector:
     COLOR_RANGES = {
@@ -29,11 +29,13 @@ class ColorDetector:
 
     def __init__(self, video_source):
         self.frame = None
-        
+        video_source = make_mp4(video_source)
         if isinstance(video_source, str):
             self.cap = cv2.VideoCapture(video_source)
             if not self.cap.isOpened():
                 raise FileNotFoundError(f"Could not open video file: {video_source}")
+            
+
         else:
             self.cap = cv2.VideoCapture(video_source)
         self.time_list = []

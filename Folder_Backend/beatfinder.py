@@ -16,6 +16,7 @@ def Search_BPM (BPM):
     base_url = "https://api.getsong.co/tempo/"
 
     # Build the URL using an f-string
+
     url = f"{base_url}?api_key={api_key}&bpm={BPM}"
 
     # Make the GET request
@@ -45,8 +46,7 @@ def Search_BPM (BPM):
                 
             #TEST
                 #print(f"Song: {title} | Artist: {artist} | BPM: {tempo}|Album: {album}")
-                for thing in playlist:
-                    print(thing)
+
             else:
                 # If it's still a string, just print the string to see what it is
                 print(f"Found something that isn't a song: {song}")
