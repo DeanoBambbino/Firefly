@@ -12,7 +12,7 @@ BPM = 100
 def Search_BPM (BPM):
     song_count = 0
     # Define your variables
-    api_key = "b07aebb582279c669b8d2f42834f61ef"
+    api_key = "-"
     base_url = "https://api.getsong.co/tempo/"
 
     # Build the URL using an f-string
