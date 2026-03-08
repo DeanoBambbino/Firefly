@@ -30,14 +30,9 @@ def Search_BPM (BPM):
             
         for song in BPM_song_list:
             if isinstance(song, dict):
-                # THIS LINE WILL SHOW US THE REAL LABELS
-                print(f"DEBUG: The raw data is: {song}") 
-                
-                if isinstance(song, dict):
-                    # We need to make sure these match the 'DEBUG' line above
-                    title = song.get('song_title', 'Unknown') # Changed from 'song_name'
-                    artist = song.get('artist_name', 'Unknown')
-                    tempo = song.get('bpm', BPM)              # Changed from 'tempo'
+                title = song.get('song_title', 'Unknown') # Changed from 'song_name'
+                artist = song.get('artist_name', 'Unknown')
+                tempo = song.get('bpm', BPM)              # Changed from 'tempo'
         
                 print(f"Song: {title} | Artist: {artist} | BPM: {tempo}")
             else:
